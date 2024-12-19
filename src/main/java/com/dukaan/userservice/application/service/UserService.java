@@ -4,7 +4,7 @@ import com.dukaan.userservice.domain.model.Role;
 import com.dukaan.userservice.domain.model.User;
 import com.dukaan.userservice.domain.repository.RoleRepository;
 import com.dukaan.userservice.domain.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -16,28 +16,42 @@ public class UserService {
 
     private final RoleRepository roleRepository;
 
-    private final PasswordEncoder passwordEncoder;
+//    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
+//        this.passwordEncoder = passwordEncoder;
     }
 
-    public void registerUser(String username, String password, String roleName) {
+    public void registerUser(String username, String password, String roleName) throws IllegalAccessException, IllegalArgumentException {
 
-//         Finding Role, If not Found Registering new Role
+        User user = userRepository.findByUsername(username).orElseGet(() -> {
+            User newUser = new User();
+            newUser.setUsername(username);
+//        user.setPassword(passwordEncoder.encode(password));
+            newUser.setPassword(password);
+            return newUser;
+        });
+
+        if (user.getUserId() != null && !password.equals(user.getPassword())) {
+            throw new IllegalAccessException("Existing User, Password Doesn't Match");
+        }
+
+        //         Finding Role, If not Found Registering new Role
         Role role = roleRepository.findByRoleName(roleName).orElseGet(() -> {
             Role newRole = new Role();
             newRole.setRoleName(roleName);
-            roleRepository.save(newRole);
             return newRole;
         });
 
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setRoles(Set.of(role));
+        if(user.getRoles() != null && user.getRoles().contains(role)) {
+            throw new IllegalArgumentException("Already Assigned with this Role");
+        }
+
+        user.addRole(role);
+        roleRepository.save(role);
         userRepository.save(user);
+
     }
 }

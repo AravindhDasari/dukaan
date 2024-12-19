@@ -1,12 +1,14 @@
 package com.dukaan.userservice.domain.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
-@Entity
 @Data
+@Entity
+@Table(name = "`user`")
 public class User {
 
     @Id
@@ -25,4 +27,10 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+
+    public void addRole(Role role) {
+        if(this.roles == null)
+            this.roles = new HashSet<Role>();
+        this.roles.add(role);
+    }
 }
