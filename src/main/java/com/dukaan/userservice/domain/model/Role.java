@@ -1,10 +1,14 @@
 package com.dukaan.userservice.domain.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Role {
 
     @Id
@@ -13,9 +17,5 @@ public class Role {
 
     @Column(unique = true, nullable = false)
     private String roleName;
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
 
 }

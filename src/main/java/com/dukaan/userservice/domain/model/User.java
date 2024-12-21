@@ -8,6 +8,8 @@ import java.util.Set;
 
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "`user`")
 public class User {
 
@@ -16,9 +18,13 @@ public class User {
     private Long userId;
 
     @Column(unique = true, nullable = false)
-    private String username;
+    private String userName;
 
     private String password;
+
+    private String email;
+
+    private String phoneNumber;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
