@@ -138,6 +138,7 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("Role not found : "+roleName));
 
         user.addRole(role);
+        userRepository.save(user);
 
         return new Message("Assigned User "+userName+" with Role "+roleName+" Successfully");
     }
