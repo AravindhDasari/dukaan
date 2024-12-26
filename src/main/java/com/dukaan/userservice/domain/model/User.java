@@ -9,7 +9,6 @@ import java.util.Set;
 @Data
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor
 @Table(name = "`user`")
 public class User {
 
@@ -34,9 +33,7 @@ public class User {
     )
     private Set<Role> roles;
 
-    public void addRole(Role role) {
-        if(this.roles == null)
-            this.roles = new HashSet<Role>();
-        this.roles.add(role);
+    public User() {
+        this.roles = new HashSet<>();
     }
 }
