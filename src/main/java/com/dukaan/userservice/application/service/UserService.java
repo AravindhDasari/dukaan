@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 //import java.util.Set;
@@ -24,21 +25,22 @@ public class UserService {
 
     private final RoleRepository roleRepository;
 
-//    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-//        this.passwordEncoder = passwordEncoder;
+        this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     public void registerUser(String username, String password, String roleName) throws IllegalAccessException, IllegalArgumentException {
 
         User user = userRepository.findByUserName(username).orElseGet(() -> {
             User newUser = new User();
             newUser.setUserName(username);
-//        user.setPassword(passwordEncoder.encode(password));
-            newUser.setPassword(password);
+            newUser.setPassword(passwordEncoder.encode(password));
+//          newUser.setPassword(password);
             return newUser;
         });
 
@@ -57,7 +59,7 @@ public class UserService {
             throw new IllegalArgumentException("Already Assigned with this Role");
         }
 
-        user.addRole(role);
+        user.getRoles().add(role);
         roleRepository.save(role);
         userRepository.save(user);
 
@@ -137,7 +139,7 @@ public class UserService {
         Role role = roleRepository.findByRoleName(roleName)
                 .orElseThrow(() -> new IllegalArgumentException("Role not found : "+roleName));
 
-        user.addRole(role);
+        user.getRoles().add(role);
         userRepository.save(user);
 
         return new Message("Assigned User "+userName+" with Role "+roleName+" Successfully");
