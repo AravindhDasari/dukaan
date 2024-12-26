@@ -7,10 +7,12 @@ import com.dukaan.userservice.domain.model.dto.UserProfileDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@PreAuthorize("hasAnyRole('ADMIN','USER')")
 public class UserController {
 
     private final UserService userService;
@@ -51,11 +53,7 @@ public class UserController {
         } else if (username != null) {
             return ResponseEntity.ok(userService.deleteUserByUserName(username));
         } else {
-            String message = "";
-            if (id == null)
-                message += "id is Null";
-            if (username == null)
-                message += "username is Null";
+            String message = "id, username is Null";
             return ResponseEntity.ok(new Message(message));
         }
 
